@@ -139,19 +139,19 @@ fetch("http://localhost:8080/pdf", requestOptions)
 ```
 
 # Examples
- The below example files are included within this repository [here](./examples)
+ The below example files are included within this repository [here](examples)
 
 ### Example 1: Regular LTR Text with font
-![image](./examples/ex1/example.png)
+![image](examples/ex1/example.png)
 
 ### Example 2: Regular RTL Text with font
-![image](./examples/ex2/example.png)
+![image](examples/ex2/example.png)
 
 ### Example 3: An Image wtih text
-![image](./examples/ex3/example.png)
+![image](examples/ex3/example.png)
 
 ### Example 4: A table
-![image](./examples/ex4/example.png)
+![image](examples/ex4/example.png)
 
 # Fonts
 It will happen that you use a font in the docx document that is not included within your system. In that case, the said
@@ -176,9 +176,9 @@ This tool was designed with performance in mind.
 The default settings runs the service with one converter worker only. If you have enough system resources available and
 need to increase the worker pool size, you can do so by providing the environment variable `pool.size` to the service.
 
-Or you can do so by uncommenting the `pool.size` line in the [properties](./src/main/resources/application.properties) file.
+Or you can do so by uncommenting the `pool.size` line in the [properties](src/main/resources/application.properties) file.
 
-The test is done through a web browser and javascript, checkout [index.html](./scripts/index.html) & [stress.js](./scripts/stress.js) respectively.
+The test is done through a web browser and javascript, checkout [index.html](scripts/index.html) & [stress.js](scripts/stress.js) respectively.
 
 I've stress tested this service with concurrent requests with a very simple 1-page docx file (example 1), here are the results:
 

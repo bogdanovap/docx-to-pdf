@@ -16,6 +16,8 @@ import kotlin.io.path.createTempDirectory
 class LibreOfficeServer(val host: String, val port: Int, val id: Int)  {
     private val logger = logger()
     private val libreOfficeUserProfilePath: Path = createTempDirectory(prefix = "docx-to-pdf-profile-")
+    private val libreOfficeExecutable =
+        System.getenv("LIBREOFFICE_BIN") ?: "libreoffice"
     val logPrefix = "[LibreOffice/$id]"
     val process: Process
 
@@ -26,7 +28,7 @@ class LibreOfficeServer(val host: String, val port: Int, val id: Int)  {
         logger.debug("$logPrefix Port: $port")
 
         val process = ProcessBuilder(
-            "libreoffice",
+            libreOfficeExecutable,
             "--headless",
             "--invisible",
             "--nocrashreport",
@@ -65,17 +67,25 @@ class LibreOfficeServer(val host: String, val port: Int, val id: Int)  {
         val timeout = 10 * 1000
 
         while (true) {
+            if (!process.isAlive) {
+                throw IllegalStateException(
+                    "$logPrefix exited before opening $host:$port (exit code ${process.exitValue()})"
+                )
+            }
+
             try {
                 Socket().use { socket ->
-                    socket.connect(InetSocketAddress(host, port), 10 * 1000)
+                    socket.connect(InetSocketAddress(host, port), 500)
                     logger.debug("$logPrefix Successfully started server on $host:$port")
                 }
                 break
             } catch (e: IOException) {
                 // Check if the timeout has been exceeded
                 if (System.currentTimeMillis() - startTime > timeout) {
-                    logger.error("$logPrefix Connection attempt timed out after $timeout milliseconds.")
-                    break
+                    process.destroyForcibly()
+                    throw IllegalStateException(
+                        "$logPrefix did not open $host:$port within $timeout milliseconds"
+                    )
                 }
                 // Sleep for a short interval before retrying
                 try {
